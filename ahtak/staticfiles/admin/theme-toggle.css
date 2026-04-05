@@ -1,0 +1,99 @@
+.ahtak-theme-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.6rem;
+  line-height: 1;
+}
+
+.ahtak-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.ahtak-theme-toggle:focus {
+  outline: 2px solid rgba(16, 185, 129, 0.8); /* emerald */
+  outline-offset: 2px;
+}
+
+.ahtak-theme-toggle__icon {
+  font-size: 0.95rem;
+}
+
+.ahtak-theme-toggle__text {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* --- Layout fixes: use full content width (remove big empty gap) --- */
+/* Jazzmin uses AdminLTE containers that can appear overly centered/narrow. */
+.content-wrapper > .content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.content-wrapper .container,
+.content-wrapper .container-fluid,
+.content-wrapper .container-sm,
+.content-wrapper .container-md,
+.content-wrapper .container-lg,
+.content-wrapper .container-xl,
+.content-wrapper .container-xxl {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Make the main form card span comfortably on wide screens */
+.content-wrapper .col-lg-9 {
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+.content-wrapper .col-lg-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+@media (max-width: 991.98px) {
+  .content-wrapper .col-lg-9,
+  .content-wrapper .col-lg-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* --- Fix Django admin "selector" widget (Groups/Permissions) --- */
+/* Prevent truncated/hidden option labels by ensuring usable widths. */
+.selector {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.selector .selector-available,
+.selector .selector-chosen {
+  width: 45% !important;
+  max-width: 45% !important;
+}
+
+.selector select {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 420px;
+}
+
+@media (max-width: 768px) {
+  .selector .selector-available,
+  .selector .selector-chosen {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .selector select {
+    min-width: 0;
+  }
+}
+

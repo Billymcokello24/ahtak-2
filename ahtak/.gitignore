@@ -1,0 +1,5 @@
+.env
+_cpanel_zip_staging/
+*.pyc
+__pycache__/
+.venv/

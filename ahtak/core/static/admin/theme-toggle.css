@@ -1,0 +1,106 @@
+.ahtak-theme-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.6rem;
+  line-height: 1;
+}
+
+.ahtak-theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.ahtak-theme-toggle:focus {
+  outline: 2px solid rgba(16, 185, 129, 0.8); /* emerald */
+  outline-offset: 2px;
+}
+
+.ahtak-theme-toggle__icon {
+  font-size: 0.95rem;
+}
+
+.ahtak-theme-toggle__text {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* --- Layout fixes: use full content width (remove big empty gap) --- */
+/* Jazzmin 3 uses `.app-main` / `.app-content` with Bootstrap containers. */
+.app-wrapper,
+.app-main,
+.app-content {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+.app-content > .container,
+.app-content > .container-fluid,
+.app-content > .container-sm,
+.app-content > .container-md,
+.app-content > .container-lg,
+.app-content > .container-xl,
+.app-content > .container-xxl,
+.app-content-header > .container,
+.app-content-header > .container-fluid {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Make the main form card span comfortably on wide screens */
+.app-content .col-lg-9 {
+  flex: 0 0 75%;
+  max-width: 75%;
+}
+.app-content .col-lg-3 {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+@media (max-width: 991.98px) {
+  .app-content .col-lg-9,
+  .app-content .col-lg-3 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* --- Fix Django admin "selector" widget (Groups/Permissions) --- */
+/* Prevent truncated/hidden option labels by ensuring usable widths. */
+.selector {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex-wrap: wrap; /* if container is narrow, wrap instead of crushing */
+}
+
+.selector .selector-available,
+.selector .selector-chosen {
+  flex: 1 1 22rem !important; /* grow, but don't shrink too small */
+  min-width: 22rem !important;
+  max-width: 100% !important;
+}
+
+.selector select {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Make long permission names readable even if width is limited. */
+.selector select option {
+  white-space: normal;
+}
+
+@media (max-width: 768px) {
+  .selector .selector-available,
+  .selector .selector-chosen {
+    min-width: 0 !important;
+  }
+
+  .selector select {
+    min-width: 0;
+  }
+}
+

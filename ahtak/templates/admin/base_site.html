@@ -1,0 +1,79 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<div id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+/* Force full-width admin content (prevents centered/narrow snap-back). */
+/* This is intentionally high-specificity and uses !important to win against runtime tweaks. */
+body .app-wrapper,
+body .app-main,
+body .app-content,
+body .app-content-header {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+body .app-content > .container,
+body .app-content > .container-fluid,
+body .app-content > .container-sm,
+body .app-content > .container-md,
+body .app-content > .container-lg,
+body .app-content > .container-xl,
+body .app-content > .container-xxl,
+body .app-content-header > .container,
+body .app-content-header > .container-fluid {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Change/add form layout: keep main content left and actions fixed-width. */
+body .app-content #content-main > form > .row {
+  align-items: flex-start !important;
+}
+
+@media (min-width: 992px) {
+  body .app-content #content-main > form > .row > .col-lg-9 {
+    flex: 0 0 auto !important;
+    width: calc(100% - 360px) !important;
+    max-width: calc(100% - 360px) !important;
+  }
+
+  body .app-content #content-main > form > .row > .col-lg-3 {
+    flex: 0 0 360px !important;
+    width: 360px !important;
+    max-width: 360px !important;
+  }
+}
+
+/* Extra responsive improvements for Django admin on mobile */
+@media (max-width: 768px) {
+  #header { padding: 10px 15px; }
+  #branding, #user-tools { width: 100%; }
+  #user-tools { font-size: 0.8125rem; word-break: break-word; }
+  #user-tools a, #logout-form button { padding: 4px 8px; }
+  .breadcrumbs { padding: 8px 15px; font-size: 0.8125rem; }
+  #content { padding: 10px 15px; }
+  .module h2, .module caption { font-size: 0.9375rem; }
+  input[type="text"], input[type="password"], input[type="email"], input[type="number"],
+  select, textarea { max-width: 100%; }
+  .submit-row { padding: 10px 0; }
+  .submit-row input, .submit-row a { margin: 4px 0; }
+  #changelist table { display: block; overflow-x: auto; }
+  #changelist .actions { margin: 10px 0; }
+  #changelist-filter { position: static; width: 100%; }
+}
+</style>
+{% endblock %}
