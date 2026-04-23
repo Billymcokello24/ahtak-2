@@ -36,7 +36,7 @@ DEBUG = os.environ.get('DEBUG', 'True').strip().lower() in ('1', 'true', 'yes', 
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,ahttak.or.ke,www.ahttak.or.ke,api.ahttak.or.ke",
+    "localhost,127.0.0.1,ahttak.or.ke,www.ahttak.or.ke",
 ).split(",") if h.strip()]
 
 # URL of the frontend app (root redirect goes here)
@@ -106,7 +106,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         "CSRF_TRUSTED_ORIGINS",
-        "https://ahttak.or.ke,https://www.ahttak.or.ke,https://api.ahttak.or.ke",
+        "https://ahttak.or.ke,https://www.ahttak.or.ke",
     ).split(",")
     if origin.strip()
 ]
