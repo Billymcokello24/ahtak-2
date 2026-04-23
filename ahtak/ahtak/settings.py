@@ -24,10 +24,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%mdmv943hc3enqbh2lcs$c^%u-vz2!%hc97u!m0$ffy5$hi*%!'
+# Read SECRET_KEY from environment for production safety; fallback to existing key for local dev
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-%mdmv943hc3enqbh2lcs$c^%u-vz2!%hc97u!m0$ffy5$hi*%!'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Allow overriding DEBUG via environment variable (use 'False' on production)
+DEBUG = os.environ.get('DEBUG', 'True').strip().lower() in ('1', 'true', 'yes', 'on')
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get(
     "ALLOWED_HOSTS",
@@ -307,73 +312,3 @@ MPESA_CALLBACK_URL = os.environ.get(
     'MPESA_CALLBACK_URL',
     'https://your-domain.com/api/payments/mpesa/callback/' if not DEBUG else ''
 )
-
-
-# =========================
-# PRODUCTION SETTINGS (ADDED)
-# =========================
-
-# Turn off debug in production
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
-
-# Backend domain (API)
-BACKEND_URL = os.environ.get("BACKEND_URL", "https://api.ahttak.or.ke")
-
-# Fix allowed hosts for production
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get(
-    "ALLOWED_HOSTS",
-    "127.0.0.1,localhost,ahttak.or.ke,www.ahttak.or.ke,api.ahttak.or.ke"
-).split(",") if h.strip()]
-
-# CORS (allow frontend to talk to backend)
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "https://ahttak.or.ke",
-    "https://www.ahttak.or.ke",
-]
-
-# Allow cookies/auth across domains
-CORS_ALLOW_CREDENTIALS = True
-
-# CSRF (VERY IMPORTANT for Django + frontend)
-CSRF_TRUSTED_ORIGINS = [
-    "https://ahttak.or.ke",
-    "https://www.ahttak.or.ke",
-    "https://api.ahttak.or.ke",
-]
-
-# Security (required for HTTPS)
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-# If frontend and backend are on different subdomains
-SESSION_COOKIE_SAMESITE = "None"
-CSRF_COOKIE_SAMESITE = "None"
-
-# Tell Django it's behind Nginx (SSL termination)
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# Force HTTPS
-SECURE_SSL_REDIRECT = True
-
-# Static files (for nginx)
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# Logging (helps debugging in production)
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-}
