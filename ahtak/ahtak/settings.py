@@ -36,19 +36,77 @@ DEBUG = os.environ.get('DEBUG', 'True').strip().lower() in ('1', 'true', 'yes', 
 
 ALLOWED_HOSTS = [h.strip() for h in os.environ.get(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,ahttak.or.ke,www.ahttak.or.ke",
+    "localhost,127.0.0.1,ahttak.or.ke,www.ahttak.or.ke,api.ahttak.or.ke",
 ).split(",") if h.strip()]
 
 # URL of the frontend app (root redirect goes here)
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'https://ahttak.or.ke')
 
-CORS_ALLOW_ALL_ORIGINS = DEBUG
-CORS_ALLOWED_ORIGINS = [] if DEBUG else ['http://localhost:5173', 'http://127.0.0.1:5173']
+# Configure CORS: allow all during DEBUG, otherwise permit the frontend origin(s)
+from urllib.parse import urlparse
+
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+    CORS_ALLOWED_ORIGINS = []
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    parsed = urlparse(FRONTEND_URL)
+    scheme = parsed.scheme or 'https'
+    host = parsed.hostname or 'ahttak.or.ke'
+    origins = [f"{scheme}://{host}"]
+    # also allow www variant
+    if not host.startswith('www.'):
+        origins.append(f"{scheme}://www.{host}")
+    # include local dev ports if explicitly set via env (keeps previous behavior optional)
+    extra = os.environ.get('CORS_EXTRA_ALLOWED', '')
+    if extra:
+        origins.extend([o.strip() for o in extra.split(',') if o.strip()])
+    CORS_ALLOWED_ORIGINS = origins
+
+# Allow cookies/credentials (required when using SessionAuthentication)
+CORS_ALLOW_CREDENTIALS = os.environ.get('CORS_ALLOW_CREDENTIALS', 'True').strip().lower() in ('1', 'true', 'yes', 'on')
+
+# Additional CORS settings: ensure headers and methods used by the frontend are permitted
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'x-api-key',
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'PUT',
+    'PATCH',
+    'DELETE',
+    'OPTIONS',
+]
+
+# If behind a reverse proxy (nginx) set this so Django knows request is secure
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# When running under HTTPS enforce secure cookies and optional redirect
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    # Allow cross-site cookies for SPA <-> API communication (requires HTTPS)
+    SESSION_COOKIE_SAMESITE = os.environ.get('SESSION_COOKIE_SAMESITE', 'None')
+    CSRF_COOKIE_SAMESITE = os.environ.get('CSRF_COOKIE_SAMESITE', 'None')
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').strip().lower() in ('1', 'true', 'yes', 'on')
+
+# CSRF trusted origins: include frontend and API domains by default
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         "CSRF_TRUSTED_ORIGINS",
-        "https://ahttak.or.ke,https://www.ahttak.or.ke,http://localhost:5173,http://127.0.0.1:5173",
+        "https://ahttak.or.ke,https://www.ahttak.or.ke,https://api.ahttak.or.ke",
     ).split(",")
     if origin.strip()
 ]

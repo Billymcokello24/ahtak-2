@@ -1,0 +1,22 @@
+[Unit]
+Description=gunicorn daemon for ahtak
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/ahtak
+# Load environment variables from the project .env (ensure permissions are correct)
+EnvironmentFile=/var/www/ahtak/.env
+ExecStart=/var/www/ahtak/.venv/bin/gunicorn \
+  --access-logfile - \
+  --error-logfile - \
+  --workers 3 \
+  --bind unix:/run/gunicorn-ahtak.sock \
+  ahtak.wsgi:application
+
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
