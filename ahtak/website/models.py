@@ -98,10 +98,47 @@ class SiteSettings(models.Model):
 
     @classmethod
     def get_settings(cls):
-        obj, _ = cls.objects.get_or_create(
+        obj, created = cls.objects.get_or_create(
             pk=1,
             defaults={"site_name": "Animal Health Technicians and Technologists Association (AHTTAK)"},
         )
+        # Ensure runtime defaults for nav/footer so frontend sees expected links
+        default_nav = [
+            {"label": "Home", "url": "/"},
+            {"label": "About", "url": "/about"},
+            {"label": "Membership", "url": "/membership"},
+            {"label": "CPD", "url": "/cpd"},
+            {"label": "Events", "url": "/events"},
+            {"label": "Resources", "url": "/resources"},
+            {"label": "Downloads", "url": "/downloads"},
+            {"label": "Jobs", "url": "/jobs"},
+            {"label": "Projects", "url": "/projects"},
+            {"label": "Gallery", "url": "/gallery"},
+            {"label": "News", "url": "/blog"},
+            {"label": "Contact", "url": "/contact"},
+            {"label": "Join Us", "url": "/register"},
+            {"label": "Sign In", "url": "/login"},
+        ]
+        changed = False
+        # populate or merge nav_links
+        if not obj.nav_links:
+            obj.nav_links = default_nav.copy()
+            changed = True
+        else:
+            existing_urls = {l.get('url') for l in obj.nav_links if isinstance(l, dict)}
+            for item in default_nav:
+                if item['url'] not in existing_urls:
+                    obj.nav_links.append(item)
+                    changed = True
+        # ensure footer_links and footer_sections exist
+        if not getattr(obj, 'footer_links', None):
+            obj.footer_links = obj.nav_links
+            changed = True
+        if not getattr(obj, 'footer_sections', None):
+            obj.footer_sections = [{"title": "Quick Links", "links": obj.nav_links}]
+            changed = True
+        if changed:
+            obj.save()
         return obj
 
 
