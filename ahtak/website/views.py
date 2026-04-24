@@ -2,7 +2,8 @@
 import django_filters
 from django.db.models import Q
 from rest_framework import viewsets, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import (
     SiteSettings,
@@ -51,6 +52,15 @@ class SiteSettingsViewSet(viewsets.ViewSet):
     def list(self, request):
         settings = SiteSettings.get_settings()
         return Response(SiteSettingsSerializer(settings).data)
+
+    @action(detail=False, methods=["patch"], permission_classes=[IsAdminUser])
+    def update(self, request):
+        """Admin-only: update site settings (partial)."""
+        settings = SiteSettings.get_settings()
+        ser = SiteSettingsSerializer(settings, data=request.data, partial=True)
+        ser.is_valid(raise_exception=True)
+        ser.save()
+        return Response(ser.data)
 
 
 class HeroSlideViewSet(viewsets.ReadOnlyModelViewSet):
@@ -208,3 +218,9 @@ class SEOPageViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SEOPageSerializer
     permission_classes = [AllowAny]
     lookup_field = "page_name"
+
+    def get_permissions(self):
+        # Allow anonymous read, but restrict writes to admins
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [IsAdminUser()]
+        return [AllowAny()]
