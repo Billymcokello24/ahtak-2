@@ -26,6 +26,7 @@ from .serializers import (
 class MemberRegisterView(viewsets.ViewSet):
     """Public endpoint for non-members to apply for membership. Creates Member + User (inactive)."""
     permission_classes = [AllowAny]
+    authentication_classes = []
     serializer_class = MemberRegisterSerializer
 
     def create(self, request):
