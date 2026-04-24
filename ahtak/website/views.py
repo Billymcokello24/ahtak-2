@@ -2,7 +2,7 @@
 import django_filters
 from django.db.models import Q
 from rest_framework import viewsets, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser, SAFE_METHODS
 from rest_framework.response import Response
 from .models import (
     SiteSettings,
@@ -45,8 +45,15 @@ from .serializers import (
 )
 
 
-class SiteSettingsViewSet(viewsets.ViewSet):
-    permission_classes = [AllowAny]
+class SiteSettingsViewSet(viewsets.ModelViewSet):
+    queryset = SiteSettings.objects.all()
+    serializer_class = SiteSettingsSerializer
+
+    def get_permissions(self):
+        # allow read to anyone, write to admins only
+        if self.request.method in SAFE_METHODS:
+            return [AllowAny()]
+        return [IsAdminUser()]
 
     def list(self, request):
         settings = SiteSettings.get_settings()
@@ -203,8 +210,12 @@ class GalleryAlbumViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
 
-class SEOPageViewSet(viewsets.ReadOnlyModelViewSet):
+class SEOPageViewSet(viewsets.ModelViewSet):
     queryset = SEOPage.objects.all()
     serializer_class = SEOPageSerializer
-    permission_classes = [AllowAny]
     lookup_field = "page_name"
+
+    def get_permissions(self):
+        if self.request.method in SAFE_METHODS:
+            return [AllowAny()]
+        return [IsAdminUser()]
