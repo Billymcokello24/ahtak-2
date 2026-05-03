@@ -114,7 +114,7 @@ export default function PublicLayout() {
   };
 
   const siteName = settings?.site_name || 'Animal Health Technicians and Technologists Association (AHTTAK)';
-  const tagline = settings?.tagline || 'Upholding Professional Standards';
+  const tagline = settings?.tagline || 'Where Everyone Count';
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
